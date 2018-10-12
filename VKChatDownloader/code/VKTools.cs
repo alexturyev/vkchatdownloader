@@ -62,7 +62,8 @@ namespace VKChatDownloader
                 {
                     var type = (string)msg.attachments[att].type;
                     Attachment attachment = new Attachment(type);
-                    if(type == "doc")
+                    attachment.Year = message.Date.Year;
+                    if (type == "doc")
                     {
                         attachment.Filename = (string)msg.attachments[att].doc.title;
                         attachment.Link = (string)msg.attachments[att].doc.url;

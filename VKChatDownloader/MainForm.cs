@@ -58,6 +58,19 @@ namespace VKChatDownloader
             }
         }
 
+        public void SetDownloadCountLabel(string msg)
+        {
+            if (this.downloadCountLabel.InvokeRequired)
+            {
+                SetTextCallback d = new SetTextCallback(SetDownloadCountLabel);
+                this.Invoke(d, new object[] { msg });
+            }
+            else
+            {
+                this.downloadCountLabel.Text = msg;
+            }
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             webBrowser1.Show();

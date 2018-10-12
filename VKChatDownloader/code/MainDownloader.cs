@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace VKChatDownloader
@@ -16,6 +17,7 @@ namespace VKChatDownloader
         string dir;
         private string token;
         private bool stop = false;
+        const int MAX_DOWNLOADS = 25;
 
         public MainDownloader()
         {
@@ -40,7 +42,6 @@ namespace VKChatDownloader
             stop = false;
             Console.WriteLine("Downloading All");
             this.form = form;
-            var ignoreCount = 0;
             for(var a = 0; a < convos.Conversations.Count && !stop; a++)
             {
                 var convo = convos.Conversations[a];
@@ -51,16 +52,23 @@ namespace VKChatDownloader
                 }
                 if (convo.type == "chat" || convo.type == "user")
                 {
-                    form.LogThis("Downloading " + a + "/" + convos.Conversations.Count + " (" + name + ") " + "[" + convo.type + "]");
-                    form.SetStatus("Качаю " + a + " из " + convos.Conversations.Count + " (" + name + ") ");
+                    form.LogThis("Downloading " + (a+1) + "/" + convos.Conversations.Count + " (" + name + ") " + "[" + convo.type + "]");
+                    form.SetStatus("Качаю " + (a + 1) + " из " + convos.Conversations.Count + " (" + name + ") ");
                     Download(convos.Conversations[a], dir);
                 }
                 else
                 {
                     form.LogThis("Ignoring " + convo.type + " chat (" + convo.id + ")");
                 }
+                if(downloadCounter > MAX_DOWNLOADS / 2)
+                {
+                    form.LogThis("Too many downloads... waiting for most of them to finish");
+                    while(downloadCounter > MAX_DOWNLOADS / 2 && !stop)
+                    {
+                        Task.Delay(100);
+                    }
+                }
                 form.LogThis("");
-                stop = true;
             }
         }
 
@@ -123,6 +131,10 @@ namespace VKChatDownloader
                         for (var a = 0; a < attachments.Count && !stop; a++)
                         {
                             DownloadAttachment(attachments[a], convoName);
+                            while (downloadCounter > MAX_DOWNLOADS && !stop)
+                            {
+                                Task.Delay(100);
+                            }
                         }
                     }
                     
@@ -140,24 +152,65 @@ namespace VKChatDownloader
                 {
                     Directory.CreateDirectory(dirPath);
                 }
+                dirPath = Path.Combine(dirPath, "" + a.Year);
+                if (!Directory.Exists(dirPath))
+                {
+                    Directory.CreateDirectory(dirPath);
+                }
                 var filePath = Path.Combine(dirPath, a.Filename);
-                if (!File.Exists(filePath))
+                bool alreadyExists = false;
+                if(File.Exists(filePath)) {
+                    alreadyExists = true;
+                    // might want to check for empty files here
+                }
+                if (!alreadyExists)
                 {
                     form.LogThis("Downloading " + a.Filename);
-                    WebClient myWebClient = new WebClient();
-                    myWebClient.DownloadFile(a.Link, filePath);
+                    AddDownload(new Uri(a.Link), filePath);
                 }
                 else
                 {
                     form.LogThis(a.Filename + " already exists.");
                 }
-                
             }            
         }
 
         private string CleanFileName(string fileName)
         {
             return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty));
+        }
+
+        int downloadCounter = 0;
+
+        public async void AddDownload(Uri uri, string filePath)
+        {
+            using (WebClient myWebClient = new WebClient())
+            {
+                IncreaseDownloadCounter();
+                try
+                {
+                    await myWebClient.DownloadFileTaskAsync(uri, filePath);
+                    DecreaseDownloadCounter();
+                } catch(Exception ex)
+                {
+                    DecreaseDownloadCounter();
+                    form.LogThis(uri.AbsoluteUri);
+                    form.LogThis("ERROR:" + ex.Message + " [" + ex.StackTrace + "]");
+                }
+            }
+        }
+
+        private void IncreaseDownloadCounter()
+        {
+            Interlocked.Increment(ref downloadCounter);
+            //downloadCounter++;
+            form.SetDownloadCountLabel("Качается - " + downloadCounter + " файлов");
+        }
+
+        private void DecreaseDownloadCounter()
+        {
+            Interlocked.Decrement(ref downloadCounter);
+            form.SetDownloadCountLabel("Качается - " + downloadCounter + " файлов");
         }
     }
 }

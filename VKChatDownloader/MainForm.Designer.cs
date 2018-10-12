@@ -31,6 +31,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.downloadCountLabel = new System.Windows.Forms.Label();
+            this.downloadAttachCB = new System.Windows.Forms.CheckBox();
             this.stopButton = new System.Windows.Forms.Button();
             this.downloadButton = new System.Windows.Forms.Button();
             this.statusLabel = new System.Windows.Forms.Label();
@@ -39,7 +41,6 @@
             this.logBox = new System.Windows.Forms.TextBox();
             this.welcomeLabel = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.downloadAttachCB = new System.Windows.Forms.CheckBox();
             this.mainPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,6 +56,7 @@
             // 
             // mainPanel
             // 
+            this.mainPanel.Controls.Add(this.downloadCountLabel);
             this.mainPanel.Controls.Add(this.downloadAttachCB);
             this.mainPanel.Controls.Add(this.stopButton);
             this.mainPanel.Controls.Add(this.downloadButton);
@@ -67,6 +69,27 @@
             this.mainPanel.Name = "mainPanel";
             this.mainPanel.Size = new System.Drawing.Size(369, 438);
             this.mainPanel.TabIndex = 2;
+            // 
+            // downloadCountLabel
+            // 
+            this.downloadCountLabel.AutoSize = true;
+            this.downloadCountLabel.Location = new System.Drawing.Point(4, 89);
+            this.downloadCountLabel.Name = "downloadCountLabel";
+            this.downloadCountLabel.Size = new System.Drawing.Size(110, 13);
+            this.downloadCountLabel.TabIndex = 8;
+            this.downloadCountLabel.Text = "Качается - 0 файлов";
+            // 
+            // downloadAttachCB
+            // 
+            this.downloadAttachCB.AutoSize = true;
+            this.downloadAttachCB.Checked = true;
+            this.downloadAttachCB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.downloadAttachCB.Location = new System.Drawing.Point(242, 89);
+            this.downloadAttachCB.Name = "downloadAttachCB";
+            this.downloadAttachCB.Size = new System.Drawing.Size(124, 17);
+            this.downloadAttachCB.TabIndex = 7;
+            this.downloadAttachCB.Text = "Качать Доки/Фото";
+            this.downloadAttachCB.UseVisualStyleBackColor = true;
             // 
             // stopButton
             // 
@@ -141,18 +164,6 @@
             this.welcomeLabel.Text = "Загрузка...";
             this.welcomeLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // downloadAttachCB
-            // 
-            this.downloadAttachCB.AutoSize = true;
-            this.downloadAttachCB.Checked = true;
-            this.downloadAttachCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.downloadAttachCB.Location = new System.Drawing.Point(242, 89);
-            this.downloadAttachCB.Name = "downloadAttachCB";
-            this.downloadAttachCB.Size = new System.Drawing.Size(124, 17);
-            this.downloadAttachCB.TabIndex = 7;
-            this.downloadAttachCB.Text = "Качать Доки/Фото";
-            this.downloadAttachCB.UseVisualStyleBackColor = true;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -182,6 +193,7 @@
         private System.Windows.Forms.TextBox dirTextbox;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.CheckBox downloadAttachCB;
+        private System.Windows.Forms.Label downloadCountLabel;
     }
 }
 

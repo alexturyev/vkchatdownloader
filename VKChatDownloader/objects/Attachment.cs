@@ -12,6 +12,7 @@ namespace VKChatDownloader
         public string Link;
         public string Filename;
         public string AccessKey;
+        public int Year;
 
         public Attachment(string type)
         {
